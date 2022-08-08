@@ -16,8 +16,8 @@ func appendString(slice []string, data string) []string {
 	return append(slice, data)
 }
 
-// create a functio to list all ecr images in a repository
-func listImages(repositoryName string) {
+func main() {
+	repositoryName := os.Getenv("INPUT_ECR_NAME")
 
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("eu-west-1")},
@@ -52,23 +52,13 @@ func listImages(repositoryName string) {
 		fmt.Println(*image.ImageTag)
 	}
 	sort.Strings(slice)
-	fmt.Println("----------------------------------------------------")
+	//fmt.Println("----------------------------------------------------")
 
 	//iterate over the sorted images and print them out
-	for _, image := range slice {
-		fmt.Println(image)
-	}
+	//for _, image := range slice {
+	//	fmt.Println(image)
+	//}
 
-	//fmt.Println(slice)
+	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, slice))
 
-}
-
-func main() {
-	myInput := os.Getenv("INPUT_ECR_NAME")
-
-	output := fmt.Sprintf("Hello Mike  %s", myInput)
-
-	listImages(myInput)
-
-	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, output))
 }
