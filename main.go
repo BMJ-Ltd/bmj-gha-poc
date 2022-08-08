@@ -58,7 +58,7 @@ func main() {
 	//for _, image := range slice {
 	//	fmt.Println(image)
 	//}
-
-	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, slice))
+	//s := a[len(a)-1]
+	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, slice[len(slice)-1]))
 
 }
