@@ -1,6 +1,5 @@
 # bmj-gha-poc
-
-
+```
 name: Tester-Run
 on: [push, pull_request]
 jobs:
@@ -18,3 +17,4 @@ jobs:
       - name: Get the version
         run: |
           echo "${{ steps.version.outputs.myOutput }}"
+```          
