@@ -6,6 +6,9 @@ inputs:
     description: "ECR Name"
     required: true
     default: "name"
+  REPOSITORY_NAME:
+    description: "Name of ECR repository"
+    required: true
 outputs:
   ecr_version:
     description: "Version Number"
@@ -14,3 +17,4 @@ runs:
   image: "Dockerfile"
   args:
     - ${{ inputs.ecr_name}}
+    - ${{ inputs.REPOSITORY_NAME }}
