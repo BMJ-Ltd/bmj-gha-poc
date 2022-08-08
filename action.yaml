@@ -17,4 +17,4 @@ runs:
   image: "Dockerfile"
   args:
     - ${{ inputs.ecr_name}}
-    - ${{ inputs.REPOSITORY_NAME }}
+    #- ${{ inputs.REPOSITORY_NAME }}
