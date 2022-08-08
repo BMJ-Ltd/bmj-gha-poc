@@ -1,0 +1,17 @@
+name: Build
+on: [push, pull_request]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Get Version Number
+        uses: ./ # Uses an action in the root directory
+        id: version
+        with:
+          ecr_name: "bmj-terraform-crap"
+      - name: Get the version
+        run: |
+          echo "${{ steps.version.outputs.ecr_version }} attack"
+          echo "${{ steps.version.outputs.myOutput }}"

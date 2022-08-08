@@ -1,16 +1,16 @@
 # action.yaml
-name: "BMJ-GHA-POC"
-description: "Call an API and get the result"
+name: "BMJ Custom Github Action"
+description: "Check ther version number of an ECR and get a new Number based on the result"
 inputs:
-  pokemon_id:
-    description: "number of the pokemon in the pokedex"
+  ecr_name:
+    description: "ECR Name"
     required: true
-    default: 1
+    default: "name"
 outputs:
-  pokemon_name:
-    description: "Name des Pokemons"
+  ecr_version:
+    description: "Version Number"
 runs:
   using: "docker"
   image: "Dockerfile"
   args:
-    - ${{ inputs.pokemon_id}}
+    - ${{ inputs.ecr_name}}

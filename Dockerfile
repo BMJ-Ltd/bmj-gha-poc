@@ -1,18 +1,17 @@
-# Base image
-FROM alpine:latest
+FROM golang:1.13 as builder
 
-# installes required packages for our script
-RUN apk add --no-cache \
-    bash \
-    ca-certificates \
-    curl \
-    jq
+WORKDIR /app
+COPY . /app
 
-# Copies your code file  repository to the filesystem
-COPY entrypoint.sh /entrypoint.sh
+RUN go get -d -v
 
-# change permission to execute the script and
-RUN chmod +x /entrypoint.sh
+# Statically compile our app for use in a distroless container
+RUN CGO_ENABLED=0 go build -ldflags="-w -s" -v -o app .
 
-# file to execute when the docker container starts up
-ENTRYPOINT ["/entrypoint.sh"]
+# A distroless container image with some basics like SSL certificates
+# https://github.com/GoogleContainerTools/distroless
+FROM gcr.io/distroless/static
+
+COPY --from=builder /app/app /app
+
+ENTRYPOINT ["/app"]
