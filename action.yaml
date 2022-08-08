@@ -1,6 +1,6 @@
 # action.yaml
-name: "BMJ Custom Github Action"
-description: "Check ther version number of an ECR and get a new Number based on the result"
+name: "BMJ Custom Github Action to retrieve the latest version number from ECR"
+description: "BMJ Custom Github Action to retrieve the latest version number from ECR"
 inputs:
   ecr_name:
     description: "ECR Name"
