@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -11,14 +13,47 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecr"
 )
 
+var major, minor, patch int
+
+// function increment patch number
+func incrementPatch() {
+	patch++
+}
+func incrementMinor() {
+	minor++
+	patch = 0
+}
+func incrementMajor() {
+	major++
+	minor = 0
+	patch = 0
+}
+
 // function to append a string to a slice of strings
 func appendString(slice []string, data string) []string {
 	return append(slice, data)
 }
 
-func main() {
-	repositoryName := os.Getenv("INPUT_ECR_NAME")
+// function to parse version number
+func parseVn(n string) (string, error) {
+	re := regexp.MustCompile(`^(\d+)\.(\d+)\.(\d+)$`)
+	match := re.FindStringSubmatch(n)
+	if match == nil {
+		return "", fmt.Errorf("invalid version number: %s", n)
+	}
 
+	// remove all but numers from string and convert to int
+	major, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[1], ""))
+	minor, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[2], ""))
+	patch, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[3], ""))
+
+	return fmt.Sprintf("Incrementing: %v.%v.%v", major, minor, patch), nil
+
+}
+
+func main() {
+
+	repositoryName := os.Getenv("INPUT_ECR_NAME")
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("eu-west-1")},
 	)
@@ -52,13 +87,7 @@ func main() {
 		fmt.Println(*image.ImageTag)
 	}
 	sort.Strings(slice)
-	//fmt.Println("----------------------------------------------------")
 
-	//iterate over the sorted images and print them out
-	//for _, image := range slice {
-	//	fmt.Println(image)
-	//}
-	//s := a[len(a)-1]
 	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, slice[len(slice)-1]))
 
 }
