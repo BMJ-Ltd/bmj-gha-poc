@@ -6,7 +6,10 @@ inputs:
     description: "ECR Name"
     required: true
     default: "name"
-
+  version_type:
+    description: "Version Increment type major minor patch"
+    required: true
+    default: "patch"
 outputs:
   ecr_version:
     description: "Version Number"
@@ -15,3 +18,4 @@ runs:
   image: "Dockerfile"
   args:
     - ${{ inputs.ecr_name}}
+    - ${{ inputs.version_type}}
