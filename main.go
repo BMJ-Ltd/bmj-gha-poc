@@ -87,7 +87,7 @@ func main() {
 		fmt.Println(*image.ImageTag)
 	}
 	sort.Strings(slice)
-
+	fmt.Println(parseVn(slice[len(slice)-1]))
 	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, slice[len(slice)-1]))
 
 }
