@@ -88,6 +88,7 @@ func main() {
 	}
 	sort.Strings(slice)
 	fmt.Println(parseVn(slice[len(slice)-1]))
-	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, slice[len(slice)-1]))
+	incrementPatch()
+	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
 
 }
