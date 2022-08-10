@@ -102,7 +102,6 @@ func main() {
 		incrementPatch()
 	}
 
-	incrementPatch()
 	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
 
 }
