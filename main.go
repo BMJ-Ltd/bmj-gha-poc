@@ -89,7 +89,6 @@ func main() {
 	}
 	sort.Strings(slice)
 	fmt.Println(parseVn(slice[len(slice)-1]))
-	versionType := os.Getenv("INPUT_VERSION_TYPE")
 
 	// do required increment
 	if versionType == "major" {
