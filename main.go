@@ -54,6 +54,7 @@ func parseVn(n string) (string, error) {
 func main() {
 
 	repositoryName := os.Getenv("INPUT_ECR_NAME")
+	versionType := os.Getenv("INPUT_VERSION_TYPE")
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("eu-west-1")},
 	)
@@ -88,6 +89,20 @@ func main() {
 	}
 	sort.Strings(slice)
 	fmt.Println(parseVn(slice[len(slice)-1]))
+	versionType := os.Getenv("INPUT_VERSION_TYPE")
+
+	// do required increment
+	if versionType == "major" {
+		incrementMajor()
+	}
+	if versionType == "minor" {
+		incrementMinor()
+
+	}
+	if versionType == "patch" {
+		incrementPatch()
+	}
+
 	incrementPatch()
 	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
 
