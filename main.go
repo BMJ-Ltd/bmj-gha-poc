@@ -41,12 +41,10 @@ func parseVn(n string) (string, error) {
 	if match == nil {
 		return "", fmt.Errorf("invalid version number: %s", n)
 	}
-
 	// remove all but numers from string and convert to int
 	major, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[1], ""))
 	minor, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[2], ""))
 	patch, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[3], ""))
-
 	return fmt.Sprintf("Incrementing: %v.%v.%v", major, minor, patch), nil
 
 }
@@ -55,6 +53,10 @@ func main() {
 	//variables
 	repositoryName := os.Getenv("INPUT_ECR_NAME")
 	versionType := os.Getenv("INPUT_VERSION_TYPE")
+
+	//repositoryName := "activity-api"
+	//versionType := "patch"
+
 	slice := []string{}
 
 	sess, err := session.NewSession(&aws.Config{
@@ -67,40 +69,20 @@ func main() {
 	result, err := svc.ListImages(&ecr.ListImagesInput{
 		RepositoryName: aws.String(repositoryName),
 	})
-	if result == nil {
-		fmt.Println("No images found")
-		return
-	}
+	fmt.Print(result)
 
+	// if we have an error print it and exit the program
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
+			case ecr.ErrCodeServerException:
+				fmt.Println(ecr.ErrCodeServerException, aerr.Error())
+			case ecr.ErrCodeInvalidParameterException:
+				fmt.Println(ecr.ErrCodeInvalidParameterException, aerr.Error())
 			case ecr.ErrCodeRepositoryNotFoundException:
 				fmt.Println(ecr.ErrCodeRepositoryNotFoundException, aerr.Error())
 			default:
 				fmt.Println(aerr.Error())
-
-				// iterate over the images and print them out
-				for _, image := range result.ImageIds {
-					slice = appendString(slice, *image.ImageTag)
-					fmt.Println(*image.ImageTag)
-				}
-
-				sort.Strings(slice)
-				fmt.Println(parseVn(slice[len(slice)-1]))
-
-				// do required increment
-				if versionType == "major" {
-					incrementMajor()
-				}
-				if versionType == "minor" {
-					incrementMinor()
-
-				}
-				if versionType == "patch" {
-					incrementPatch()
-				}
-
 			}
 		} else {
 			// Print the error, cast err to awserr.Error to get the Code and
@@ -109,6 +91,46 @@ func main() {
 		}
 		return
 	}
+	//loop through the images and append the version number to a slice
+	for _, image := range result.ImageIds {
+
+		if *image.ImageTag == "<untagged>" {
+			continue
+		}
+
+		slice = appendString(slice, *image.ImageTag)
+	}
+	// if lenght slice == 0 then exit the program
+	if len(slice) == 0 {
+		fmt.Println("No images found, creating a 0.0.1 version")
+		major = 0
+		minor = 0
+		patch = 1
+	} else {
+		//sort the slice
+		sort.Strings(slice)
+		//parse the version number
+		fmt.Println(parseVn(slice[len(slice)-1]))
+		//increment the version number
+		switch versionType {
+		case "patch":
+			incrementPatch()
+		case "minor":
+			incrementMinor()
+		case "major":
+			incrementMajor()
+		}
+
+	}
+
+	// create the new version number
+	//newVersion := fmt.Sprintf("%v.%v.%v", major, minor, patch)
+
+	// if lenght imageIds is 0 then exit
+	// if len(result.ImageIds) == 0 {
+	// fmt.Println("No images found")
+	// return
+	// }
 
 	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
 
