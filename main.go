@@ -67,6 +67,11 @@ func main() {
 	result, err := svc.ListImages(&ecr.ListImagesInput{
 		RepositoryName: aws.String(repositoryName),
 	})
+	if result == nil {
+		fmt.Println("No images found")
+		return
+	}
+
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
@@ -79,12 +84,6 @@ func main() {
 				for _, image := range result.ImageIds {
 					slice = appendString(slice, *image.ImageTag)
 					fmt.Println(*image.ImageTag)
-				}
-
-				// if slice is empty print error
-				if len(slice) == 0 {
-					fmt.Println("No images found")
-					return
 				}
 
 				sort.Strings(slice)
