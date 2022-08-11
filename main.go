@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -50,11 +51,11 @@ func parseVn(n string) (string, error) {
 
 func main() {
 	//variables
-	//repositoryName := os.Getenv("INPUT_ECR_NAME")
-	//versionType := os.Getenv("INPUT_VERSION_TYPE")
+	repositoryName := os.Getenv("INPUT_ECR_NAME")
+	versionType := os.Getenv("INPUT_VERSION_TYPE")
 
-	repositoryName := "activity-api"
-	versionType := "patch"
+	//repositoryName := "activity-api"
+	//versionType := "patch"
 
 	slice := []string{}
 
@@ -93,9 +94,6 @@ func main() {
 	//loop through the images and append the version number to a slice
 	for _, image := range result.ImageIds {
 
-		if *image.ImageTag == "<untagged>" {
-			continue
-		}
 		// only add the version number to the slice if it is a valid version number
 
 		re := regexp.MustCompile(`^(\d+)\.(\d+)\.(\d+)$`)
