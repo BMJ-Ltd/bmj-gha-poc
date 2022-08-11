@@ -72,6 +72,29 @@ func main() {
 				fmt.Println(ecr.ErrCodeRepositoryNotFoundException, aerr.Error())
 			default:
 				fmt.Println(aerr.Error())
+
+				slice := []string{}
+
+				// iterate over the images and print them out
+				for _, image := range result.ImageIds {
+					slice = appendString(slice, *image.ImageTag)
+					fmt.Println(*image.ImageTag)
+				}
+				sort.Strings(slice)
+				fmt.Println(parseVn(slice[len(slice)-1]))
+
+				// do required increment
+				if versionType == "major" {
+					incrementMajor()
+				}
+				if versionType == "minor" {
+					incrementMinor()
+
+				}
+				if versionType == "patch" {
+					incrementPatch()
+				}
+
 			}
 		} else {
 			// Print the error, cast err to awserr.Error to get the Code and
@@ -79,27 +102,6 @@ func main() {
 			fmt.Println(err.Error())
 		}
 		return
-	}
-	slice := []string{}
-
-	// iterate over the images and print them out
-	for _, image := range result.ImageIds {
-		slice = appendString(slice, *image.ImageTag)
-		fmt.Println(*image.ImageTag)
-	}
-	sort.Strings(slice)
-	fmt.Println(parseVn(slice[len(slice)-1]))
-
-	// do required increment
-	if versionType == "major" {
-		incrementMajor()
-	}
-	if versionType == "minor" {
-		incrementMinor()
-
-	}
-	if versionType == "patch" {
-		incrementPatch()
 	}
 
 	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
