@@ -52,9 +52,11 @@ func parseVn(n string) (string, error) {
 }
 
 func main() {
-
+	//variables
 	repositoryName := os.Getenv("INPUT_ECR_NAME")
 	versionType := os.Getenv("INPUT_VERSION_TYPE")
+	slice := []string{}
+
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("eu-west-1")},
 	)
@@ -73,13 +75,18 @@ func main() {
 			default:
 				fmt.Println(aerr.Error())
 
-				slice := []string{}
-
 				// iterate over the images and print them out
 				for _, image := range result.ImageIds {
 					slice = appendString(slice, *image.ImageTag)
 					fmt.Println(*image.ImageTag)
 				}
+
+				// if slice is empty print error
+				if len(slice) == 0 {
+					fmt.Println("No images found")
+					return
+				}
+
 				sort.Strings(slice)
 				fmt.Println(parseVn(slice[len(slice)-1]))
 
