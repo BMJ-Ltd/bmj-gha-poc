@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -41,7 +40,7 @@ func parseVn(n string) (string, error) {
 	if match == nil {
 		return "", fmt.Errorf("invalid version number: %s", n)
 	}
-	// remove all but numers from string and convert to int
+	// remove all but numbers from string and convert to int
 	major, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[1], ""))
 	minor, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[2], ""))
 	patch, _ = strconv.Atoi(regexp.MustCompile(`\D`).ReplaceAllString(match[3], ""))
@@ -51,11 +50,11 @@ func parseVn(n string) (string, error) {
 
 func main() {
 	//variables
-	repositoryName := os.Getenv("INPUT_ECR_NAME")
-	versionType := os.Getenv("INPUT_VERSION_TYPE")
+	//repositoryName := os.Getenv("INPUT_ECR_NAME")
+	//versionType := os.Getenv("INPUT_VERSION_TYPE")
 
-	//repositoryName := "activity-api"
-	//versionType := "patch"
+	repositoryName := "activity-api"
+	versionType := "patch"
 
 	slice := []string{}
 
@@ -94,11 +93,17 @@ func main() {
 	//loop through the images and append the version number to a slice
 	for _, image := range result.ImageIds {
 
-		if *image.ImageTag == "<untagged>" {
-			continue
+		//if *image.ImageTag == "<untagged>" {
+		//	continue
+		//}
+		// only add the version number to the slice if it is a valid version number
+
+		re := regexp.MustCompile(`^(\d+)\.(\d+)\.(\d+)$`)
+		match := re.FindStringSubmatch(*image.ImageTag)
+		if match != nil {
+			slice = appendString(slice, *image.ImageTag)
 		}
 
-		slice = appendString(slice, *image.ImageTag)
 	}
 	// if lenght slice == 0 then exit the program
 	if len(slice) == 0 {
@@ -132,6 +137,6 @@ func main() {
 	// return
 	// }
 
-	fmt.Println(fmt.Sprintf(`::set-output name=myOutput::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
+	fmt.Println(fmt.Sprintf(`::set-output name=newVersion::%s`, fmt.Sprintf("%v.%v.%v", major, minor, patch)))
 
 }
