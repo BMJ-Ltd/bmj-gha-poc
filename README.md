@@ -5,7 +5,7 @@ This GHA will check a given repository and increment a version number
 
 The version number must be in the format of major.minot.patch like 1.2.3
 
-If no such versionis found on any of the images that are alredy in the ECR a new version number 0.0.1 
+If no such version is found on any of the images that are already in the ECR a new version number 0.0.1 
 will be created by default.
 
 
